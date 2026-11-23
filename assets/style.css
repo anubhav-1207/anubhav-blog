@@ -20,7 +20,7 @@ button { font: inherit; }
   --surface:  #f1f0ea;
   --ink:      #14170f;
   --ink-soft: #40453d;
-  --muted:    #71766e;
+  --muted:    #696e66;
   --line:     #dedbd2;
   --signal:   #a8411d;
   --graph:    rgba(20, 23, 15, .075);
@@ -317,7 +317,10 @@ h1 em { font-style: italic; letter-spacing: -.02em; }
   border-bottom: 1px solid var(--line);
   transition: background .12s linear;
 }
-.lab-bar:focus-within { background: var(--paper); }
+.lab-bar:focus-within {
+  background: var(--paper);
+  border-bottom-color: var(--signal);
+}
 
 .lab-prompt {
   font-family: var(--mono);
