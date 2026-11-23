@@ -23,45 +23,86 @@
 
 <a class="skip" href="#main">Skip to content</a>
 
-<!-- faint measurement layer: no decoration, just instrumentation -->
+<!-- constellations: the shape of the pipeline, as a background field -->
 <div class="plotfield" aria-hidden="true">
-  <svg class="plot-a" viewBox="0 0 1000 560" fill="none">
-    <g class="g-grid">
-      <path d="M80 40v440M180 40v440M280 40v440M380 40v440M480 40v440M580 40v440M680 40v440M780 40v440M880 40v440"/>
-      <path d="M80 80h820M80 160h820M80 240h820M80 320h820M80 400h820M80 480h820"/>
+  <svg class="plot-a" viewBox="0 0 1100 780" fill="none">
+    <g class="cn-edge">
+      <path d="M84 426C140 426 180 346 236 340"/>
+      <path d="M84 430C150 434 180 516 236 520"/>
+      <path d="M244 342C310 344 340 414 396 428"/>
+      <path d="M244 520C310 516 340 444 396 432"/>
+      <path d="M404 426C470 424 500 306 556 300"/>
+      <path d="M404 434C470 438 500 534 556 540"/>
+      <path d="M564 302C630 304 660 404 716 418"/>
+      <path d="M564 538C630 536 660 432 716 422"/>
+      <path d="M724 416C780 410 810 326 866 320"/>
+      <path d="M724 424C780 430 810 514 866 520"/>
+      <path d="M874 322C930 326 960 404 1006 416"/>
+      <path d="M874 518C930 514 960 434 1006 420"/>
+      <path d="M400 436C410 520 420 590 402 636"/>
     </g>
-    <path class="g-axis" d="M80 40v440h820"/>
-    <path class="g-dash" d="M80 388C170 380 200 352 250 344S340 300 400 282S500 246 560 214S670 170 740 144S850 112 900 104"/>
-    <path class="g-line" d="M80 430C160 424 190 404 240 398S330 330 380 318S470 270 540 244S640 190 700 162S820 118 900 96"/>
-    <g class="g-grid">
-      <path d="M78 470h4M78 430h4M78 390h4M78 350h4M78 310h4M78 270h4M78 230h4M78 190h4M78 150h4M78 110h4M78 70h4"/>
+    <path class="cn-edge dashed" d="M564 306C660 200 780 380 866 516"/>
+    <path class="cn-edge dashed" d="M78 438C200 720 760 740 1008 432"/>
+    <g class="cn-dot">
+      <circle cx="80" cy="430" r="2.6"/>
+      <circle cx="240" cy="340" r="2.6"/>
+      <circle cx="240" cy="520" r="2.6"/>
+      <circle cx="560" cy="540" r="2.6"/>
+      <circle cx="720" cy="420" r="2.6"/>
+      <circle cx="870" cy="520" r="2.6"/>
+      <circle cx="400" cy="640" r="2.6"/>
+    </g>
+    <g class="cn-ring">
+      <circle cx="400" cy="430" r="5"/>
+      <circle cx="870" cy="320" r="5"/>
+    </g>
+    <g class="cn-hub">
+      <circle cx="560" cy="300" r="6"/>
+      <circle cx="1010" cy="420" r="6"/>
+    </g>
+    <g class="cn-label" text-anchor="middle">
+      <text x="560" y="276">AST</text>
+      <text x="720" y="396">RESOLVE</text>
+      <text x="870" y="296">EVAL</text>
+      <text x="870" y="498">BYTECODE</text>
+      <text x="1010" y="396">VM</text>
     </g>
   </svg>
 
-  <svg class="plot-b" viewBox="0 0 700 520" fill="none">
-    <g class="g-line">
-      <path d="M90 96C150 96 170 66 230 66"/>
-      <path d="M90 118C150 140 170 168 230 172"/>
-      <path d="M230 76C300 76 320 118 400 124"/>
-      <path d="M230 184C300 190 320 132 400 128"/>
-      <path d="M230 190C290 216 300 262 360 274"/>
-      <path d="M400 136C470 144 480 190 520 196"/>
-      <path d="M360 284C420 292 450 206 520 204"/>
-      <path d="M520 214C560 250 560 300 520 336"/>
-      <path d="M360 292C320 320 220 320 152 296"/>
-      <path d="M152 286C120 250 160 200 232 190"/>
+  <svg class="plot-b" viewBox="0 0 760 620" fill="none">
+    <g class="cn-edge">
+      <path d="M76 136C130 110 160 92 204 84"/>
+      <path d="M74 146C130 190 200 206 274 218"/>
+      <path d="M216 84C290 94 340 130 404 146"/>
+      <path d="M286 220C340 200 360 166 404 156"/>
+      <path d="M282 226C320 300 320 350 356 384"/>
+      <path d="M416 156C460 200 470 250 496 294"/>
+      <path d="M414 144C500 140 570 240 616 354"/>
+      <path d="M354 392C300 390 240 360 176 336"/>
+      <path d="M362 396C350 450 330 480 306 504"/>
+      <path d="M502 306C520 380 510 430 504 474"/>
+      <path d="M506 302C560 310 590 330 616 356"/>
+      <path d="M170 336C130 380 100 430 84 464"/>
+      <path d="M86 474C160 500 240 510 294 508"/>
+      <path d="M306 512C380 516 450 500 496 484"/>
     </g>
-    <g class="g-node">
-      <circle cx="90" cy="106" r="4"/>
-      <circle cx="230" cy="66" r="4"/>
-      <circle cx="230" cy="178" r="4"/>
-      <circle cx="400" cy="130" r="4"/>
-      <circle cx="360" cy="282" r="4"/>
-      <circle cx="520" cy="200" r="4"/>
-      <circle cx="520" cy="342" r="4"/>
-      <circle cx="152" cy="296" r="4"/>
+    <g class="cn-dot">
+      <circle cx="70" cy="140" r="2.6"/>
+      <circle cx="210" cy="80" r="2.6"/>
+      <circle cx="410" cy="150" r="2.6"/>
+      <circle cx="360" cy="390" r="2.6"/>
+      <circle cx="80" cy="470" r="2.6"/>
+      <circle cx="300" cy="510" r="2.6"/>
+      <circle cx="500" cy="480" r="2.6"/>
+      <circle cx="620" cy="360" r="2.6"/>
     </g>
-    <circle class="g-hot" cx="230" cy="178" r="4"/>
+    <g class="cn-ring">
+      <circle cx="170" cy="330" r="5"/>
+    </g>
+    <g class="cn-hub">
+      <circle cx="280" cy="220" r="6"/>
+      <circle cx="500" cy="300" r="6"/>
+    </g>
   </svg>
 </div>
 
@@ -103,40 +144,6 @@
         <span>reading — Crafting Interpreters</span>
       </p>
     </div>
-
-    <figure class="hero-fig">
-      <svg viewBox="0 0 560 276" role="img" aria-labelledby="fig1-title">
-        <title id="fig1-title">Abstract syntax tree for the expression 1 + 2 * 3</title>
-        <g class="tree-edge">
-          <path d="M280 68C280 102 150 102 150 136"/>
-          <path d="M280 68C280 102 410 102 410 136"/>
-          <path d="M410 148C410 182 330 182 330 218"/>
-          <path d="M410 148C410 182 490 182 490 218"/>
-        </g>
-        <path class="trace" pathLength="100"
-              d="M280 68C280 102 410 102 410 136"/>
-        <path class="trace trace-b" pathLength="100"
-              d="M410 148C410 182 490 182 490 218"/>
-        <g class="tree-node">
-          <rect x="276" y="64" width="8" height="8"/>
-          <rect x="146" y="132" width="8" height="8"/>
-          <rect x="406" y="132" width="8" height="8"/>
-          <rect x="326" y="214" width="8" height="8"/>
-          <rect x="486" y="214" width="8" height="8"/>
-        </g>
-        <g class="tree-label" text-anchor="middle">
-          <text x="280" y="92">add</text>
-          <text x="150" y="164">num 1</text>
-          <text x="410" y="164">mul</text>
-          <text x="330" y="246">num 2</text>
-          <text x="490" y="246">num 3</text>
-        </g>
-      </svg>
-      <figcaption>
-        <span class="fig-no">fig. 01</span> — the parser's output for
-        <code>1 + 2 * 3</code>. Structure survives; formatting does not.
-      </figcaption>
-    </figure>
   </section>
 
   <section class="sec" id="writing">

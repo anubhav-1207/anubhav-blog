@@ -103,16 +103,42 @@ body {
   -webkit-mask-image: radial-gradient(closest-side, #000 45%, transparent 100%);
 }
 
-.plot-a { top: -150px; right: -190px; width: min(1080px, 88vw); }
-.plot-b { bottom: -170px; left: -230px; width: min(780px, 72vw); }
-.plotfield--post .plot-a { top: -300px; opacity: .5; }
+.plot-a {
+  top: -30px;
+  right: -30px;
+  width: min(980px, 76vw);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 32%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 32%);
+}
+.plot-b { bottom: -180px; left: -280px; width: min(760px, 62vw); }
+.plotfield--post .plot-a { top: -120px; right: -320px; opacity: .55; }
 
-.plotfield .g-grid  { fill: none; stroke: currentColor; stroke-width: .6; opacity: .55; }
-.plotfield .g-axis  { fill: none; stroke: currentColor; stroke-width: 1; opacity: .9; }
-.plotfield .g-line  { fill: none; stroke: currentColor; stroke-width: 1.1; }
-.plotfield .g-dash  { fill: none; stroke: currentColor; stroke-width: 1; stroke-dasharray: 3 5; opacity: .8; }
-.plotfield .g-node  { fill: var(--paper); stroke: currentColor; stroke-width: 1.2; }
-.plotfield .g-hot   { fill: var(--signal); opacity: .22; stroke: none; }
+.plotfield .cn-edge {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+.plotfield .cn-edge.dashed { stroke-dasharray: 2 7; opacity: .75; }
+.plotfield .cn-dot circle { fill: var(--ink); opacity: .16; }
+.plotfield .cn-ring circle {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.1;
+  opacity: .22;
+}
+.plotfield .cn-hub circle {
+  fill: var(--signal);
+  stroke: var(--signal);
+  stroke-width: 1;
+  opacity: .26;
+}
+.plotfield .cn-label text {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .2em;
+  fill: var(--ink);
+  opacity: .16;
+}
 
 .site, .masthead, .hero, main, footer { position: relative; z-index: 1; }
 
@@ -179,12 +205,10 @@ body {
 /* ── hero ───────────────────────────────────────────────── */
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-  gap: clamp(40px, 6vw, 88px);
-  align-items: center;
-  padding: clamp(48px, 7vw, 84px) 0 clamp(40px, 5vw, 56px);
+  padding: clamp(56px, 8vw, 104px) 0 clamp(40px, 5vw, 56px);
 }
+
+.hero-text { max-width: 68rem; }
 
 .eyebrow {
   display: flex;
@@ -207,19 +231,20 @@ body {
 
 h1 {
   margin-top: 22px;
-  font-size: clamp(2.5rem, 4.6vw, 3.75rem);
+  max-width: 10.8em;
+  font-size: clamp(2.7rem, 5.2vw, 4.6rem);
   font-weight: 500;
-  line-height: 1.03;
-  letter-spacing: -.03em;
+  line-height: 1.02;
+  letter-spacing: -.035em;
   text-wrap: balance;
 }
 h1 em { font-style: italic; letter-spacing: -.02em; }
 
 .lede {
   margin-top: 26px;
-  max-width: 47ch;
-  font-size: 1.14rem;
-  line-height: 1.62;
+  max-width: 50ch;
+  font-size: 1.16rem;
+  line-height: 1.6;
   color: var(--ink-soft);
 }
 
@@ -242,69 +267,6 @@ h1 em { font-style: italic; letter-spacing: -.02em; }
 .hero-meta a:hover {
   color: var(--signal);
   text-decoration-color: var(--signal);
-}
-
-/* hero figure */
-
-.hero-fig {
-  margin: 0;
-  padding-left: clamp(20px, 3vw, 38px);
-  border-left: 1px solid var(--line);
-}
-
-.hero-fig svg {
-  width: 100%;
-  max-width: 430px;
-  height: auto;
-  color: var(--ink);
-  overflow: visible;
-}
-.hero-fig .tree-edge {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1;
-  opacity: .55;
-}
-.hero-fig .tree-node {
-  fill: var(--paper);
-  stroke: currentColor;
-  stroke-width: 1.2;
-}
-.hero-fig .tree-label {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  fill: var(--muted);
-}
-.hero-fig .trace {
-  fill: none;
-  stroke: var(--signal);
-  stroke-width: 3.2;
-  stroke-linecap: round;
-  stroke-dasharray: .1 100;
-  stroke-dashoffset: 100;
-  animation: trace 4.4s linear infinite;
-}
-.hero-fig .trace-b { animation-delay: 2.2s; }
-@keyframes trace {
-  0%   { stroke-dashoffset: 100; opacity: 0; }
-  12%  { opacity: .95; }
-  88%  { opacity: .95; }
-  100% { stroke-dashoffset: 0; opacity: 0; }
-}
-
-.hero-fig figcaption {
-  margin-top: 18px;
-  max-width: 34ch;
-  font-family: var(--mono);
-  font-size: 10.5px;
-  line-height: 1.65;
-  color: var(--muted);
-}
-.hero-fig .fig-no { color: var(--signal); }
-.hero-fig code {
-  font-family: var(--mono);
-  font-size: inherit;
-  color: var(--ink-soft);
 }
 
 /* ── sections ───────────────────────────────────────────── */
@@ -700,17 +662,8 @@ footer {
 
 @media (max-width: 900px) {
   .hero {
-    grid-template-columns: 1fr;
-    gap: 44px;
     padding-top: clamp(44px, 9vw, 64px);
   }
-  .hero-fig {
-    padding-left: 0;
-    padding-top: 28px;
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
-  .hero-fig svg { max-width: 360px; }
   .plot-b { display: none; }
 
   .about { padding-left: 0; }
@@ -774,7 +727,7 @@ footer {
     border-top: 1px solid var(--line);
   }
 
-  .plot-a { width: 140vw; right: -50vw; }
+  .plot-a { display: none; }
 }
 
 @media (min-width: 1140px) {
@@ -787,7 +740,6 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-fig .trace { animation: none; opacity: 0; }
   * { scroll-behavior: auto !important; }
 }
 
