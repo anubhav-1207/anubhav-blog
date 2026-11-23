@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="A tree-walking interpreter in four stages, and why the seams between them are the interesting part.">
+<title>What happens inside an interpreter? — Anubhav</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg fill='none' stroke='%2314170f' stroke-width='1'%3E%3Crect x='6.5' y='1' width='3' height='3'/%3E%3Crect x='1.5' y='12' width='3' height='3'/%3E%3Crect x='11.5' y='12' width='3' height='3'/%3E%3Cpath d='M8 4v3M3 12V7h10v5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+  (function () {
+    var saved = localStorage.getItem('theme');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+  })();
+</script>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div class="plotfield plotfield--post" aria-hidden="true">
+  <svg class="plot-a" viewBox="0 0 1000 560" fill="none">
+    <g class="g-grid">
+      <path d="M80 40v440M180 40v440M280 40v440M380 40v440M480 40v440M580 40v440M680 40v440M780 40v440M880 40v440"/>
+      <path d="M80 80h820M80 160h820M80 240h820M80 320h820M80 400h820M80 480h820"/>
+    </g>
+    <path class="g-axis" d="M80 40v440h820"/>
+    <path class="g-line" d="M80 430C160 424 190 404 240 398S330 330 380 318S470 270 540 244S640 190 700 162S820 118 900 96"/>
+  </svg>
+</div>
+
+<header class="masthead">
+  <div class="shell">
+    <a class="brand" href="../index.html" aria-label="Anubhav, home">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <g fill="none" stroke="currentColor" stroke-width="1">
+          <rect x="6.5" y="1" width="3" height="3"/>
+          <rect x="1.5" y="12" width="3" height="3"/>
+          <rect x="11.5" y="12" width="3" height="3"/>
+          <path d="M8 4v3M3 12V7h10v5"/>
+        </g>
+      </svg>
+      anubhav<span class="dot">.</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html#writing">writing</a>
+      <a href="../index.html#projects">projects</a>
+      <a href="../index.html#about">about</a>
+      <button class="theme" type="button" data-theme-toggle aria-label="Switch colour theme">[ dark ]</button>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="shell">
+
+  <header class="post-head">
+    <a class="back" href="../index.html#writing">← writing</a>
+    <h1 class="post-title">What happens inside an interpreter?</h1>
+    <p class="post-sub">A tree-walking interpreter in four stages — and why the seams between
+      those stages are the interesting part.</p>
+    <p class="post-meta">
+      <span>2026-11-18</span>
+      <span>interpreters</span>
+      <span>6 min read</span>
+    </p>
+  </header>
+
+  <article class="prose">
+    <p>Most explanations of interpreters describe them as a loop: read a statement, do the
+      statement, repeat. That is true the same way that "a compiler turns source into machine
+      code" is true — accurate, and useless the moment something goes wrong.</p>
+
+    <p>The clearer picture is a pipeline of four stages, each of which hands the next stage a
+      value it can no longer take back. Once you see those four handoffs, most interpreter bugs
+      announce themselves as "which stage produced this wrong thing?" rather than "the language
+      is broken".</p>
+
+    <aside class="sidenote">
+      <b>Try this.</b> Draw the four boxes on paper. When something misbehaves, point at the
+      first box whose output already looks wrong. That is where the bug is.
+    </aside>
+
+    <h2>Four stages, one contract</h2>
+
+    <p>Source text goes in at the left. At each step, the representation becomes more structured
+      and loses more of the original document:</p>
+
+    <ul>
+      <li><strong>Lexing</strong> — characters become tokens. Whitespace and comments are gone.</li>
+      <li><strong>Parsing</strong> — tokens become a tree. Parentheses are gone; precedence is baked into the shape.</li>
+      <li><strong>Resolution</strong> — names become references. Scope becomes explicit.</li>
+      <li><strong>Evaluation</strong> — the tree becomes values. Everything after this is behaviour, not structure.</li>
+    </ul>
+
+    <p>Each stage is a pure function of its input, or close enough. That is the whole trick: if
+      the lexer is correct, the parser can assume a clean stream of tokens, and no later stage
+      ever has to think about a stray comment.</p>
+
+    <h2>1. The lexer discards what it does not need</h2>
+
+    <p>A lexer is small enough to hold in your head. Its job is to collapse runs of characters
+      into a single labelled token, and to stop caring about everything else:</p>
+
+    <pre><code><span class="tok-c">// one token at a time; no context, no backtracking</span>
+<span class="tok-k">func</span> (l *Lexer) next() Token {
+    l.skipSpace()
+    <span class="tok-k">if</span> l.atEnd() {
+        <span class="tok-k">return</span> Token{Kind: EOF}
+    }
+
+    ch := l.peek()
+    <span class="tok-k">switch</span> {
+    <span class="tok-k">case</span> isDigit(ch):
+        <span class="tok-k">return</span> l.number()
+    <span class="tok-k">case</span> isLetter(ch):
+        <span class="tok-k">return</span> l.identifier()
+    <span class="tok-k">default</span>:
+        <span class="tok-k">return</span> l.punct()
+    }
+}</code></pre>
+
+    <p>Notice how little the lexer knows. It does not know that <code>if</code> starts a
+      statement, or that <code>+</code> binds tighter than <code>==</code>. It sees a character and
+      emits a token. Keeping it ignorant is what makes it easy to test: feed it a string, compare
+      the token list.</p>
+
+    <p>The one place lexers get complicated is when a token depends on context — string
+      interpolation, nested block comments, Python's significant indentation. That complexity is
+      real, and it is usually the first sign that the language is asking the lexer to do the
+      parser's job.</p>
+
+    <h2>2. The parser builds the thing everyone depends on</h2>
+
+    <p>The parser's output is the contract for the rest of the program. In a tree-walking
+      interpreter, that contract is a small set of node types:</p>
+
+    <pre><code><span class="tok-k">type</span> Expr <span class="tok-k">interface</span> { exprNode() }
+
+<span class="tok-k">type</span> Binary <span class="tok-k">struct</span> {
+    Op    Token
+    Left  Expr
+    Right Expr
+}</code></pre>
+
+    <p>That is the entire idea of an abstract syntax tree: <code>1 + 2 * 3</code> and
+      <code>1+(2*3)</code> produce the same tree, because the tree records structure and nothing
+      else. Precedence stops being a parsing detail and becomes a property of the data.<sup><a href="#fn1" id="fnref1">1</a></sup></p>
+
+    <p>Because the AST is the contract, it is also the first thing to freeze when you are
+      learning. Add nodes when you need them; change their shape rarely. Every pass you write later
+      — a resolver, a type checker, an evaluator — is written against this tree, and each one is a
+      small recursive function over it.</p>
+
+    <blockquote>
+      A parser that only ever produces correct trees is a parser with no error messages.
+    </blockquote>
+
+    <h2>3. Evaluation is the smallest piece</h2>
+
+    <p>In a tree-walker, the evaluator is embarrassingly direct: <code>eval</code> switches on the
+      node type, recurses into children, returns a value. For the whole expression language above
+      it is perhaps forty lines. The interpreter is not the evaluator; it is the lexer, the parser,
+      and the environment that the evaluator threads through.</p>
+
+    <p>That environment is where the real design lives. A lexical scope is a chain of maps; a
+      closure is a function plus the scope it was defined in; assignment is a lookup followed by a
+      mutation. None of that is visible in the grammar, and all of it determines whether the
+      language feels coherent.<sup><a href="#fn2" id="fnref2">2</a></sup></p>
+
+    <h2>What this buys you</h2>
+
+    <p>Once the stages are separate, each one becomes independently testable, and each bug has an
+      address. Wrong token? Lexer. Wrong shape? Parser. Right shape, wrong answer? Evaluator or
+      environment. That is a much better debugging experience than staring at a stack trace that
+      spans all four.</p>
+
+    <p>It also makes the next step obvious. Swap the tree-walker for a compiler that emits
+      bytecode, and the lexer and parser do not change at all — you replace the last stage and keep
+      the contract. That is the point of the pipeline: the seams are meant to be cut.</p>
+
+    <div class="footnotes">
+      <ol>
+        <li id="fn1">Tree-walking and bytecode compilation are not rivals so much as different
+          answers to "how much structure do I keep at runtime?" A tree-walker keeps the program's
+          shape visible, which makes error messages and debugging easier. A bytecode VM keeps it
+          flat, which makes execution faster. <a href="#fnref1">↩</a></li>
+        <li id="fn2">The other half of that design is error recovery. Stopping at the first syntax
+          error is trivial; continuing to parse so an editor can report three errors at once is
+          what separates a toy from a tool. <a href="#fnref2">↩</a></li>
+      </ol>
+    </div>
+  </article>
+
+  <nav class="post-nav" aria-label="More writing">
+    <a href="../index.html#writing">
+      <span class="dir">previous</span>
+      <span class="to">Learning Go by building small tools</span>
+    </a>
+    <a href="../index.html#writing">
+      <span class="dir">next</span>
+      <span class="to">A first look at abstract syntax trees</span>
+    </a>
+  </nav>
+
+</main>
+
+<footer>
+  <div class="shell">
+    <div class="foot-main">
+      <span>© 2026 Anubhav</span>
+      <span class="foot-links">
+        <a href="https://github.com/anubhav-1207">github</a>
+        <a href="../index.html">home</a>
+        <a href="mailto:hello@example.com">email</a>
+      </span>
+    </div>
+    <p class="colophon">
+      Set in Newsreader and IBM Plex Mono. No framework, no analytics, no cookie banner.
+    </p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.querySelector('[data-theme-toggle]');
+
+    function paint() {
+      var dark = root.dataset.theme === 'dark';
+      btn.textContent = dark ? '[ light ]' : '[ dark ]';
+      btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+
+    btn.addEventListener('click', function () {
+      var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      localStorage.setItem('theme', next);
+      paint();
+    });
+
+    paint();
+  })();
+</script>
+
+</body>
+</html>
