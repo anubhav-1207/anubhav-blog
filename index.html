@@ -146,6 +146,49 @@
     </div>
   </section>
 
+  <section class="lab" aria-labelledby="lab-title">
+    <div class="lab-head">
+      <span class="lab-fig">fig. 01</span>
+      <h2 id="lab-title">A tiny interpreter, running in this page</h2>
+      <span class="lab-src" aria-hidden="true">lexer → parser → evaluator</span>
+    </div>
+
+    <div class="lab-shell">
+      <div class="lab-bar">
+        <span class="lab-prompt" aria-hidden="true">›</span>
+        <input class="lab-expr" id="expr" type="text" value="1 + 2 * 3"
+               aria-label="Expression to interpret"
+               autocomplete="off" autocapitalize="off" spellcheck="false">
+        <span class="lab-hint" aria-hidden="true">try  2 ^ 10 · pi · -(1 + 2) * 3</span>
+      </div>
+      <p class="lab-error" id="lab-error" role="status" aria-live="polite"></p>
+      <noscript>
+        <p class="lab-noscript">
+          The interpreter needs JavaScript. For <code>1 + 2 * 3</code> the tokens are
+          <code>NUM(1) PLUS NUM(2) STAR NUM(3) EOF</code>, the tree is
+          <code>add(1, mul(2, 3))</code>, and the value is <code>7</code>.
+        </p>
+      </noscript>
+      <div class="lab-out">
+        <div class="lab-col">
+          <h3>Tokens</h3>
+          <ol class="lab-tokens" id="tokens"></ol>
+        </div>
+        <div class="lab-col">
+          <h3>Parse tree</h3>
+          <pre class="lab-tree" id="tree"></pre>
+        </div>
+        <div class="lab-col lab-col-value">
+          <h3>Value</h3>
+          <p class="lab-value"><span aria-hidden="true">=</span><span id="value">7</span></p>
+        </div>
+      </div>
+    </div>
+
+    <p class="lab-note">A real lexer, recursive-descent parser, and tree-walking evaluator —
+      the same three stages as <a href="posts/what-happens-inside-an-interpreter.html">the article below</a>.</p>
+  </section>
+
   <section class="sec" id="writing">
     <div class="sec-head">
       <span class="sec-idx">01</span>
@@ -267,6 +310,7 @@
   </div>
 </footer>
 
+<script src="assets/lab.js" defer></script>
 <script>
   (function () {
     var root = document.documentElement;
